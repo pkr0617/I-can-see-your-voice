@@ -6,6 +6,7 @@
 import os
 import sys
 import types
+from unicodedata import category
 import numpy as np
 
 폴더 = os.path.dirname(os.path.abspath(__file__))
@@ -65,8 +66,15 @@ def 끝무음자르기(소리):
 
 한글음절 = []
 for 음절 in 음절들:
-    if 음절['한글아님'] is None:   #한글 아닌 글자(문장부호 등)는 빼고
-        한글음절.append(음절)
+    문자 = 음절['한글아님']
+    if 문자 is None:
+        한글음절.append(음절.copy())
+    elif 한글음절 and (음절['어절끝'] or category(문자).startswith('P')):
+        # 문장부호는 읽지 않되, 그 앞의 한글 음절에서 어절을 끊음
+        한글음절[-1]['어절끝'] = True
+
+if not 한글음절:
+    sys.exit('합성할 한글 음절이 없습니다.')
 
 ############ 억양 만들기 ##############
 pointer = 0 # 아이터레이터?
