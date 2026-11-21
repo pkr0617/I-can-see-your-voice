@@ -1,40 +1,36 @@
 #테스트 케이스(cases.json) 전부 돌려서 틀린 것만 출력
 #실행: python tests/run_tests.py        (음운 변동 폴더에서)
 #      python tests/run_tests.py -a     (맞은 것도 전부 출력)
-#main.py는 input()으로 문장을 받는 구조라서, input과 print를 바꿔치기해서 그대로 실행함
-import builtins
-import contextlib
-import io
+#main.py의 음운변동(문장) 함수를 불러서 확인함  [변경] 예전: input과 print를 바꿔치기해서 main.py를 exec로 실행
 import json
 import os
 import re
 import sys
 
-import kiwipiepy
 
 폴더 = os.path.dirname(os.path.abspath(__file__))
 음운폴더 = os.path.dirname(폴더)
 sys.path.insert(0, 음운폴더)
 from hangul import First, Second, Third
 
-#Kiwi를 매번 새로 만들면 느려서 하나만 만들어 재사용
-_kiwi = kiwipiepy.Kiwi()
-kiwipiepy.Kiwi = lambda *a, **k: _kiwi
-
-main코드 = compile(open(os.path.join(음운폴더, 'main.py'), encoding='utf-8').read(), 'main.py', 'exec')
+#[변경] main.py가 음운변동(문장) 함수가 돼서, input 바꿔치기·exec 없이 그냥 함수를 부름
+#  예전 코드:
+#    _kiwi = kiwipiepy.Kiwi()
+#    kiwipiepy.Kiwi = lambda *a, **k: _kiwi       (Kiwi를 매번 새로 만들면 느려서 재사용)
+#    main코드 = compile(open(... 'main.py' ...).read(), 'main.py', 'exec')
+#    def 발음(문장):
+#        builtins.input = lambda *a: 문장
+#        공간 = {'__name__': 'main'}
+#        with contextlib.redirect_stdout(io.StringIO()):
+#            exec(main코드, 공간)
+#        ... 공간['음절들'] 사용
+#  -> 이제 main.py가 Kiwi를 import할 때 한 번만 만들어서 재사용 트릭도 필요 없음
+from main import 음운변동
 
 
 def 발음(문장):
-    원래input = builtins.input
-    builtins.input = lambda *a: 문장
-    try:
-        공간 = {'__name__': 'main'}
-        with contextlib.redirect_stdout(io.StringIO()):
-            exec(main코드, 공간)
-    finally:
-        builtins.input = 원래input
     결과 = ''
-    for 음절 in 공간['음절들']:
+    for 음절 in 음운변동(문장):
         if 음절['한글아님'] is not None:
             결과 += 음절['한글아님']
         else:
