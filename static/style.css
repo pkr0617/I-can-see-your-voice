@@ -1,0 +1,401 @@
+/* 윈도우 7 에어로 느낌 */
+
+:root {
+  --font: "Segoe UI", "Malgun Gothic", sans-serif;
+  --blue: #1e3287;
+  --gray: #5a5a5a;
+  --red: #c00000;
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 48px 16px;
+  font: 13px var(--font);
+  color: #000;
+  background:
+    radial-gradient(ellipse 70% 45% at 55% 40%, rgba(120, 200, 255, .55), transparent 70%),
+    radial-gradient(ellipse 120% 60% at 20% 110%, rgba(0, 60, 140, .9), transparent 60%),
+    linear-gradient(160deg, #0b4fa0, #1d7fd1 45%, #0d5db5 70%, #08386f);
+  background-attachment: fixed;
+}
+
+button, textarea { font: inherit; }
+
+[hidden] { display: none !important; }
+
+
+/* ===== 창 ===== */
+
+.window {
+  position: relative;
+  width: 100%;
+  max-width: 600px;
+  padding: 0 8px 8px;
+  border: 1px solid rgba(0, 0, 0, .7);
+  border-radius: 8px;
+  background:
+    linear-gradient(rgba(255, 255, 255, .7), rgba(255, 255, 255, .3) 14px, rgba(255, 255, 255, .1) 15px, rgba(255, 255, 255, .04) 31px, transparent 60%, rgba(255, 255, 255, .12)),
+    linear-gradient(90deg, rgba(255, 255, 255, .25), transparent 15%, transparent 85%, rgba(255, 255, 255, .2)),
+    rgba(80, 140, 210, .5);
+  backdrop-filter: blur(12px) saturate(160%);
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, .7),
+    inset 0 2px 0 rgba(255, 255, 255, .5),
+    inset 0 -2px 0 rgba(0, 30, 80, .25),
+    inset 0 0 12px rgba(255, 255, 255, .35),
+    0 0 0 1px rgba(255, 255, 255, .2),
+    0 10px 30px rgba(0, 0, 0, .55),
+    0 2px 6px rgba(0, 0, 0, .35);
+  overflow: hidden;
+}
+
+/* 유리에 비친 빛줄기 */
+.window::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(115deg,
+    transparent 22%, rgba(255, 255, 255, .45) 25%, rgba(255, 255, 255, .08) 31%, transparent 34%,
+    transparent 52%, rgba(255, 255, 255, .32) 55%, transparent 61%,
+    transparent 76%, rgba(255, 255, 255, .24) 79%, transparent 84%);
+}
+
+/* 아래로 갈수록 살짝 어두워지는 그림자 */
+.window::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(transparent 70%, rgba(0, 20, 60, .18));
+}
+
+.titlebar {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  height: 30px;
+  padding-left: 4px;
+}
+
+h1 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: 13px;
+  font-weight: normal;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 0 10px #fff, 0 0 10px #fff, 0 0 4px #fff;
+}
+
+/* 최소화 / 최대화 / 닫기 (눌러도 아무것도 안 함) */
+.caption {
+  display: flex;
+  align-self: flex-start;
+  border: 1px solid rgba(0, 0, 0, .65);
+  border-top: 0;
+  border-radius: 0 0 5px 5px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .6), 0 1px 3px rgba(0, 0, 0, .25);
+  overflow: hidden;
+}
+
+.caption button {
+  position: relative;
+  width: 26px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  background: linear-gradient(#eef3fa, #d4e0ef 45%, #b4c8e2 50%, #c9dbf0);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .7);
+}
+
+.caption button + button { border-left: 1px solid rgba(0, 0, 0, .45); }
+
+/* 브라우저에서 볼 때는 모양만, 창으로 열었을 때만 진짜로 동작 */
+.app .caption button:hover { background: linear-gradient(#f4f9ff, #c6ddf6 45%, #8fbbe9 50%, #b5d8f7); }
+.app .caption .close:hover { background: linear-gradient(#f6c2b3, #e8846a 45%, #d8401f 50%, #f0a060); box-shadow: 0 0 6px rgba(255, 120, 80, .8); }
+
+.caption .close {
+  width: 44px;
+  background: linear-gradient(#eeb2a2, #d97a62 45%, #c1381a 50%, #d9824a);
+}
+
+.caption .min::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  bottom: 4px;
+  width: 10px;
+  height: 4px;
+  background: #fff;
+  border: 1px solid #333;
+}
+
+.caption .max::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 3px;
+  width: 11px;
+  height: 10px;
+  border: 1px solid #333;
+  border-top-width: 3px;
+  box-shadow: inset 0 0 0 1px #fff;
+}
+
+.caption .close::before,
+.caption .close::after {
+  content: "";
+  position: absolute;
+  left: 15px;
+  top: 7px;
+  width: 13px;
+  height: 4px;
+  background: #fff;
+  border: 1px solid #5a1b0e;
+  transform: rotate(45deg);
+}
+.caption .close::after { transform: rotate(-45deg); }
+
+/* 창 안쪽 흰 영역 - 테두리에 살짝 파묻힌 느낌 */
+.content {
+  position: relative;
+  z-index: 1;
+  padding: 18px 20px 6px;
+  background: #fff;
+  border: 1px solid #6c7f99;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, .7),
+    inset 0 1px 2px rgba(0, 0, 0, .12);
+}
+
+
+/* ===== 내용 ===== */
+
+section { margin-bottom: 18px; }
+
+h2 {
+  margin: 0 0 10px;
+  font-size: 15px;
+  font-weight: normal;
+  color: var(--blue);
+}
+
+.note {
+  font-size: 12px;
+  color: var(--gray);
+}
+
+textarea {
+  display: block;
+  width: 100%;
+  min-height: 72px;
+  padding: 4px 6px;
+  font-size: 15px;
+  resize: vertical;
+  border: 1px solid #abadb3;
+  border-top-color: #8e8f8f;
+  border-radius: 2px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .08);
+  outline: none;
+}
+textarea:hover { border-color: #7eb4ea; }
+textarea:focus { border-color: #569de5; }
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.status {
+  margin: -8px 0 14px;
+  font-size: 12px;
+  color: var(--gray);
+}
+.status:empty { display: none; }
+.status.error { color: var(--red); }
+
+.pron {
+  margin: 0 0 14px;
+  font-size: 22px;
+  word-break: keep-all;
+}
+.pron::before,
+.pron::after { color: var(--gray); }
+.pron::before { content: "["; }
+.pron::after { content: "]"; }
+
+
+/* ===== 버튼 ===== */
+
+.btn {
+  display: inline-block;
+  min-width: 86px;
+  padding: 4px 14px;
+  color: #000;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  border: 1px solid #707070;
+  border-radius: 3px;
+  background: linear-gradient(#f2f2f2, #ebebeb 49%, #ddd 50%, #cfcfcf);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .8);
+  cursor: default;
+}
+.btn:hover {
+  border-color: #3c7fb1;
+  background: linear-gradient(#eaf6fd, #d9f0fc 49%, #bee6fd 50%, #a7d9f5);
+}
+.btn:active {
+  border-color: #2c628b;
+  background: linear-gradient(#e5f4fc, #c4e5f6 49%, #98d1ef 50%, #68b3db);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, .25);
+}
+.btn:disabled {
+  color: #838383;
+  border-color: #adb2b5;
+  background: #f4f4f4;
+  box-shadow: none;
+}
+.btn:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: -4px;
+}
+.btn.default {
+  border-color: #3c7fb1;
+  box-shadow: inset 0 0 0 1px #a7d9f5;
+}
+
+
+/* ===== 재생기 ===== */
+
+.player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid #b9c9da;
+  border-radius: 3px;
+  background: linear-gradient(#fafcfe, #e6eef7);
+}
+
+/* 파란 구슬 버튼 */
+.orb {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid #1b4a7a;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 22%, rgba(255, 255, 255, .85), transparent 70%),
+    radial-gradient(circle at 50% 85%, #6fd0ff, #2a8ad6 45%, #0e4f96);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .4), inset 0 0 0 1px rgba(255, 255, 255, .35);
+  cursor: default;
+}
+.orb:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 0 8px rgba(80, 180, 255, .9), inset 0 0 0 1px rgba(255, 255, 255, .45);
+}
+.orb:active { filter: brightness(.92); }
+.orb:focus-visible {
+  outline: 1px dotted #000;
+  outline-offset: 2px;
+}
+.orb svg {
+  width: 20px;
+  height: 20px;
+  fill: #fff;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .5));
+}
+.orb .pause,
+.orb.playing .play { display: none; }
+.orb.playing .pause { display: block; }
+
+/* 초록 진행 막대 */
+.seek {
+  flex: 1;
+  min-width: 60px;
+  height: 15px;
+  border: 1px solid #bcbcbc;
+  border-radius: 3px;
+  background: linear-gradient(#f3f3f3, #e3e3e3 50%, #dadada 51%, #e9e9e9);
+  overflow: hidden;
+  cursor: pointer;
+  touch-action: none;
+}
+.seek div {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(#cdffcd, #6ee06e 45%, #27c227 50%, #5edc5e);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .45);
+}
+
+.time {
+  font-size: 12px;
+  color: #333;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* ===== 폰 ===== */
+
+@media (max-width: 520px) {
+  body { padding: 16px 8px; }
+  .content { padding: 14px 12px 4px; }
+  .caption button { width: 22px; }
+  .caption .min::after { left: 6px; }
+  .caption .max::after { left: 5px; }
+  .caption .close { width: 36px; }
+  .caption .close::before,
+  .caption .close::after { left: 11px; }
+  .row { flex-direction: column; align-items: stretch; }
+  .player { flex-wrap: wrap; }
+  .seek { flex-basis: calc(100% - 50px); }
+  .time { flex: 1; }
+}
+
+
+/* ===== 프로그램 창으로 열었을 때 (tts_web.py, ?app=1) ===== */
+/* 바깥 파란 배경 없이 창이 화면에 꽉 차고, 내용이 길면 안쪽만 스크롤 */
+
+.app body {
+  display: block;
+  padding: 0;
+  min-height: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app .window {
+  display: flex;
+  flex-direction: column;
+  max-width: none;
+  height: 100vh;
+  border-radius: 0;
+}
+
+.app .content {
+  flex: 1;
+  overflow: auto;
+}
+
+.app h1 { cursor: default; user-select: none; }
